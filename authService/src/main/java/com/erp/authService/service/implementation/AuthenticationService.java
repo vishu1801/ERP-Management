@@ -28,7 +28,6 @@ public class AuthenticationService implements IAuthenticationService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(requestDTO.getUsername(), requestDTO.getPassword()));
             String token = jwtTokenHelper.generateToken((User) authentication.getPrincipal());
-
             return new LoginResponseDTO(token);
         } catch(Exception e){
             throw new IllegalArgumentException("Invalid Credentials");

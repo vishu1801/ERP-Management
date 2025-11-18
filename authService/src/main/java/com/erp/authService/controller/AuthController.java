@@ -1,5 +1,6 @@
 package com.erp.authService.controller;
 
+import com.erp.authService.model.User;
 import com.erp.authService.payload.request.LoginRequestDTO;
 import com.erp.authService.payload.response.LoginResponseDTO;
 import com.erp.authService.service.IAuthenticationService;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -21,6 +22,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> authenticateUser(@RequestBody LoginRequestDTO requestDTO){
         return new ResponseEntity<>(service.doLogin(requestDTO), HttpStatusCode.valueOf(200));
+    }
+
+    @PostMapping("/getUser")
+    public ResponseEntity<User> validateToken(@RequestBody String token){
+        return new ResponseEntity<>(service.validateToken(token), HttpStatusCode.valueOf(200));
     }
 
 }

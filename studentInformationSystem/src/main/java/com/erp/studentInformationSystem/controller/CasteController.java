@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/caste")
+@RequestMapping("/api/v1/setup/caste")
 @RequiredArgsConstructor
 public class CasteController {
 
     private final ICasteService service;
 
-    @PostMapping
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<CasteResponseDTO> create(@RequestBody @Valid CasteRequestDTO requestDTO){
         return new ResponseEntity<>(service.createCaste(requestDTO), HttpStatusCode.valueOf(201));
     }

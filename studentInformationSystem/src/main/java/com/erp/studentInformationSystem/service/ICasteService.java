@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 public interface ICasteService {
-    CasteResponseDTO createCaste(@Valid CasteRequestDTO requestDTO);
+    CasteResponseDTO createCaste(CasteRequestDTO requestDTO);
 
     CasteResponseDTO getCasteById(String casteId);
 

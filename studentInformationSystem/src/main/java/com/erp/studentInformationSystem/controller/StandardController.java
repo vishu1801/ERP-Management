@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/standard")
+@RequestMapping("/api/v1/setup/standard")
 @RequiredArgsConstructor
 public class StandardController {
 

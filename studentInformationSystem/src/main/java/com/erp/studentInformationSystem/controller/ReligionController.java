@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/religion")
+@RequestMapping("/api/v1/setup/religion")
 @RequiredArgsConstructor
 public class ReligionController {
 
     private final IReligionService service;
 
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     public ResponseEntity<ReligionResponseDTO> create(@RequestBody @Valid ReligionRequestDTO requestDTO){
         return new ResponseEntity<>(service.createReligion(requestDTO), HttpStatusCode.valueOf(201));
     }

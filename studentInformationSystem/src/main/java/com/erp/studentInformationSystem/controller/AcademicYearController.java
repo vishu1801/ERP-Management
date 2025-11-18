@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/academic-year")
+@RequestMapping("/api/v1/setup/academic-year")
 @RequiredArgsConstructor
 public class AcademicYearController {
 

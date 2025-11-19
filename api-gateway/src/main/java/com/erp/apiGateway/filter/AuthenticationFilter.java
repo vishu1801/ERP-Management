@@ -1,19 +1,25 @@
 package com.erp.apiGateway.filter;
 
 import io.micrometer.common.util.StringUtils;
+import java.util.Map;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
     private final RouteValidator routeValidator;
+    private final WebClient.Builder webClient;
 
-    public AuthenticationFilter(RouteValidator routeValidator) {
+
+    public AuthenticationFilter(RouteValidator routeValidator, WebClient.Builder webClient) {
         super(Config.class);
         this.routeValidator = routeValidator;
+        this.webClient = webClient;
     }
 
     @Override
@@ -31,11 +37,20 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 if (!StringUtils.isEmpty(token) && token.startsWith("Bearer ")) {
                     token = token.substring(7);
                 }
-                try{
-                    //jwt decoder
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                Map<String, Object> requestBody = Map.of("name", "vishu");
+
+                return webClient.build().post()
+                        .uri("lb://AUTH-SERVICE/auth/getUser")
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .bodyValue(requestBody)
+                        .retrieve()
+                        .bodyToMono(Map.class)
+                        .then(chain.filter(exchange))
+                        .onErrorResume(e -> {
+                            throw new RuntimeException("Unauthorized: " + e.getMessage());
+                        });
+
 
             }
             return chain.filter(exchange);

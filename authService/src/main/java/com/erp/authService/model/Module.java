@@ -29,7 +29,7 @@ public class Module extends AuditableEntity {
 
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "module_action_mapping",
             joinColumns = @JoinColumn(name = "module_id"),
@@ -37,6 +37,6 @@ public class Module extends AuditableEntity {
     )
     private List<ModuleAction> actions = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "modules", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "modules")
     private List<Group> groups = new ArrayList<>();
 }

@@ -37,7 +37,7 @@ public class Group extends AuditableEntity {
 
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "group_module_mapping",
             joinColumns = @JoinColumn(name = "group_id"),
@@ -45,11 +45,11 @@ public class Group extends AuditableEntity {
     )
     private List<Module> modules = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "institute_id", nullable = false)
     private Institute institute;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
             name = "group_user_mapping",
             joinColumns = @JoinColumn(name = "group_id"),

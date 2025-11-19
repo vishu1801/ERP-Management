@@ -1,5 +1,6 @@
 package com.erp.authService.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -40,22 +41,24 @@ public class User extends AuditableEntity implements UserDetails {
 
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne (fetch = FetchType.EAGER)
     @JoinColumn(name = "institute_id", nullable = false)
     private Institute institute;
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private List<Group> groups = new ArrayList<>();
 
-    @OneToMany(mappedBy = "family", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "family")
+    @JsonIgnore
     private List<User> students = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "family_id")
+    @JsonIgnore
     private User family;
 
 

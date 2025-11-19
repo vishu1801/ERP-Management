@@ -1,10 +1,7 @@
 package com.erp.studentInformationSystem.controller;
 
-import com.erp.studentInformationSystem.payload.request.AcademicYearRequestDTO;
 import com.erp.studentInformationSystem.payload.request.CasteRequestDTO;
-import com.erp.studentInformationSystem.payload.response.AcademicYearResponseDTO;
 import com.erp.studentInformationSystem.payload.response.CasteResponseDTO;
-import com.erp.studentInformationSystem.service.IAcademicYearService;
 import com.erp.studentInformationSystem.service.ICasteService;
 import jakarta.validation.Valid;
 import java.util.List;

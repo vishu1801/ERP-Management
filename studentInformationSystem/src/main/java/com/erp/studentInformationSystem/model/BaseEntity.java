@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditEntityListener.class)
-public abstract class AuditableEntity {
+public abstract class BaseEntity {
 
     @Column(updatable = false)
     private LocalDateTime createdAt;

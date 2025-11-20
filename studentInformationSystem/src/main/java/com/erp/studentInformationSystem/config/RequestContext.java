@@ -1,5 +1,10 @@
 package com.erp.studentInformationSystem.config;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class RequestContext {
 
     private static final ThreadLocal<RequestContext> userContext = ThreadLocal.withInitial(RequestContext::new);
@@ -15,10 +20,4 @@ public class RequestContext {
         userContext.remove();
     }
 
-    // Getters & Setters
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
-
-    public String getUserRole() { return userRole; }
-    public void setUserRole(String userRole) { this.userRole = userRole; }
 }

@@ -40,8 +40,10 @@ public class JwtTokenHelper {
         return expiration.before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(String userId, UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("authorities", userDetails.getAuthorities());
         return doGenerateToken(claims, userDetails.getUsername());
     }
 

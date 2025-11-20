@@ -1,6 +1,7 @@
 package com.erp.authService.service.implementation;
 
 import com.erp.authService.helper.JwtTokenHelper;
+import com.erp.authService.mapper.UserMapper;
 import com.erp.authService.model.User;
 import com.erp.authService.payload.request.LoginRequestDTO;
 import com.erp.authService.payload.response.LoginResponseDTO;
@@ -21,13 +22,14 @@ public class AuthenticationService implements IAuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     private final JwtTokenHelper jwtTokenHelper;
+    private final UserMapper userMapper;
 
     @Override
     public LoginResponseDTO doLogin(LoginRequestDTO requestDTO){
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(requestDTO.getUsername(), requestDTO.getPassword()));
-            String token = jwtTokenHelper.generateToken((User) authentication.getPrincipal());
+            String token = jwtTokenHelper.generateToken(((User)authentication.getPrincipal()).getId(),(User) authentication.getPrincipal());
             return new LoginResponseDTO(token);
         } catch(Exception e){
             throw new IllegalArgumentException("Invalid Credentials");
@@ -35,12 +37,12 @@ public class AuthenticationService implements IAuthenticationService {
     }
 
     @Override
-    public User validateToken(String token) {
+    public UserResponseDTO validateToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             Object principal = authentication.getPrincipal();
             if (principal instanceof User user) {
-                return user;
+                return userMapper.toResponseDTO(user);
             } else {
                 // Principal is not an instance of User, throw CustomException
                 throw new RuntimeException("");

@@ -6,6 +6,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -37,16 +38,28 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 if (!StringUtils.isEmpty(token) && token.startsWith("Bearer ")) {
                     token = token.substring(7);
                 }
-                Map<String, Object> requestBody = Map.of("name", "vishu");
 
                 return webClient.build().post()
                         .uri("lb://AUTH-SERVICE/auth/getUser")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .bodyValue(requestBody)
                         .retrieve()
                         .bodyToMono(Map.class)
-                        .then(chain.filter(exchange))
+                        .flatMap(user -> {
+
+                            String id = (String) user.get("id");
+
+                            Map<String, Object> roleMap = (Map<String, Object>) user.get("role");
+                            String roleName = (String) roleMap.get("name");
+
+                            ServerHttpRequest mutated = exchange.getRequest().mutate()
+                                    .header("X-USER-ID", id)
+                                    .header("X-USER-ROLE", roleName)
+                                    .build();
+
+                            return chain.filter(exchange.mutate().request(mutated).build());
+
+                        })
                         .onErrorResume(e -> {
                             throw new RuntimeException("Unauthorized: " + e.getMessage());
                         });

@@ -34,12 +34,27 @@ public class UserService implements IUserService {
     @Override
     public UserResponseDTO getUserById(String userId) {
         User user = userRepository.findById(userId).orElseThrow();
-
         return userMapper.toResponseDTO(user);
     }
 
     @Override
     public UserResponseDTO updateUser(String userId, UserRequestDTO requestDTO) {
-        return null;
+        User user = userRepository.findById(userId).orElseThrow();
+
+        // Check for duplicate username (excluding current user)
+        if (!user.getUsername().equals(requestDTO.getUserName())
+                && userRepository.existsByUsername(requestDTO.getUserName())) {
+//            throw new DuplicateResourceException("User", "username", request.getUsername());
+        }
+
+        // Check for duplicate email (excluding current user)
+        if (!user.getEmail().equals(requestDTO.getEmail())
+                && userRepository.existsByEmail(requestDTO.getEmail())) {
+//            throw new DuplicateResourceException("User", "email", request.getEmail());
+        }
+
+        userMapper.updateUser(user, requestDTO);
+
+        return userMapper.toResponseDTO(userRepository.save(user));
     }
 }

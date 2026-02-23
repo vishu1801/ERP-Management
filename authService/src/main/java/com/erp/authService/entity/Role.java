@@ -34,5 +34,5 @@ public class Role extends AuditableEntity {
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "module_id")
     )
-    private List<Module> modules = new ArrayList<>();
+    private List<AppModule> appModules = new ArrayList<>();
 }

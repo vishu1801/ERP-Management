@@ -1,6 +1,6 @@
 package com.erp.authService.service.implementation;
 
-import com.erp.authService.model.User;
+import com.erp.authService.entity.User;
 import com.erp.authService.repo.UserRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

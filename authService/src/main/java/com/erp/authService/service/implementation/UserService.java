@@ -1,7 +1,7 @@
 package com.erp.authService.service.implementation;
 
 import com.erp.authService.mapper.UserMapper;
-import com.erp.authService.model.User;
+import com.erp.authService.entity.User;
 import com.erp.authService.payload.request.UserRequestDTO;
 import com.erp.authService.payload.response.UserResponseDTO;
 import com.erp.authService.repo.UserRepository;

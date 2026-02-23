@@ -1,4 +1,4 @@
-package com.erp.authService.model;
+package com.erp.authService.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;

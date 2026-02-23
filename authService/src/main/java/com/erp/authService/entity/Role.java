@@ -1,11 +1,14 @@
-package com.erp.authService.model;
+package com.erp.authService.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,7 +16,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class ModuleAction extends AuditableEntity {
+public class Role extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,6 +28,11 @@ public class ModuleAction extends AuditableEntity {
 
     private String description;
 
-    @ManyToMany(mappedBy = "actions", fetch = FetchType.LAZY)
-    private List<Module> modules;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "role_module_mapping",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "module_id")
+    )
+    private List<Module> modules = new ArrayList<>();
 }

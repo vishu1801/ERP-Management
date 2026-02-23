@@ -2,7 +2,7 @@ package com.erp.authService.service.implementation;
 
 import com.erp.authService.helper.JwtTokenHelper;
 import com.erp.authService.mapper.UserMapper;
-import com.erp.authService.model.User;
+import com.erp.authService.entity.User;
 import com.erp.authService.payload.request.LoginRequestDTO;
 import com.erp.authService.payload.response.LoginResponseDTO;
 import com.erp.authService.payload.response.UserResponseDTO;
@@ -12,7 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +23,7 @@ public class AuthenticationService implements IAuthenticationService {
 
     private final JwtTokenHelper jwtTokenHelper;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public LoginResponseDTO doLogin(LoginRequestDTO requestDTO){

@@ -1,6 +1,6 @@
 package com.erp.authService.payload.response;
 
-import com.erp.authService.model.Role;
+import com.erp.authService.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

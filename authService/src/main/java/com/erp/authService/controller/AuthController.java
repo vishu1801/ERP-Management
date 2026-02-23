@@ -1,9 +1,7 @@
 package com.erp.authService.controller;
 
-import com.erp.authService.model.User;
 import com.erp.authService.payload.request.LoginRequestDTO;
 import com.erp.authService.payload.response.LoginResponseDTO;
-import com.erp.authService.payload.response.UserResponseDTO;
 import com.erp.authService.service.IAuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;

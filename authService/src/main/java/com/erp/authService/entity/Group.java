@@ -1,4 +1,4 @@
-package com.erp.authService.model;
+package com.erp.authService.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -44,10 +44,6 @@ public class Group extends AuditableEntity {
             inverseJoinColumns = @JoinColumn(name = "module_id")
     )
     private List<Module> modules = new ArrayList<>();
-
-    @ManyToOne
-    @JoinColumn(name = "institute_id", nullable = false)
-    private Institute institute;
 
     @ManyToMany
     @JoinTable(

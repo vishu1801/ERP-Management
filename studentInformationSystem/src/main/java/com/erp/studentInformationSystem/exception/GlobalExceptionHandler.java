@@ -17,6 +17,6 @@ public class GlobalExceptionHandler {
 //        apiError.setCode(INTERNAL_SERVER_ERROR.getErrorCode());
 //        apiError.setTimestamp(clock.millis());
 //        logger.logError(ex.getMessage(), ex);
-        return new ResponseEntity<>("Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

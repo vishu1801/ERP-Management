@@ -1,12 +1,9 @@
 package com.erp.studentInformationSystem.service.implementation;
 
-import com.erp.studentInformationSystem.mapper.CasteMapper;
 import com.erp.studentInformationSystem.mapper.ReligionMapper;
-import com.erp.studentInformationSystem.model.Caste;
 import com.erp.studentInformationSystem.model.Religion;
 import com.erp.studentInformationSystem.payload.request.ReligionRequestDTO;
 import com.erp.studentInformationSystem.payload.response.ReligionResponseDTO;
-import com.erp.studentInformationSystem.repository.CasteRepository;
 import com.erp.studentInformationSystem.repository.ReligionRepository;
 import com.erp.studentInformationSystem.service.IReligionService;
 import java.util.List;

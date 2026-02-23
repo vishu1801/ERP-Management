@@ -1,7 +1,6 @@
 package com.erp.studentInformationSystem.service.implementation;
 
 import com.erp.studentInformationSystem.mapper.CasteMapper;
-import com.erp.studentInformationSystem.model.AcademicYear;
 import com.erp.studentInformationSystem.model.Caste;
 import com.erp.studentInformationSystem.payload.request.CasteRequestDTO;
 import com.erp.studentInformationSystem.payload.response.CasteResponseDTO;

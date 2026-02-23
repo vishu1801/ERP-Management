@@ -1,7 +1,6 @@
 package com.erp.studentInformationSystem.service.implementation;
 
 import com.erp.studentInformationSystem.mapper.StandardMapper;
-import com.erp.studentInformationSystem.model.Religion;
 import com.erp.studentInformationSystem.model.Standard;
 import com.erp.studentInformationSystem.payload.request.StandardRequestDTO;
 import com.erp.studentInformationSystem.payload.response.StandardResponseDTO;

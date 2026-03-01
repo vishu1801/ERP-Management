@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,7 +15,8 @@ import lombok.Setter;
 @Builder
 public class AppModuleResponseDTO {
 
-    private Long id;
+    private String id;
     private String name;
     private String description;
+    private List<GroupResponseDTO> groups;
 }

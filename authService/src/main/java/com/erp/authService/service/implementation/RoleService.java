@@ -28,7 +28,7 @@ public class RoleService implements IRoleService {
         if (appModules.isEmpty())
             throw new RuntimeException("No modules found for given IDs");
 
-        role.setAppModules(appModules);
+//        role.setAppModules(appModules);
         roleRepository.save(role);
         return new RoleResponseDTO();
     }

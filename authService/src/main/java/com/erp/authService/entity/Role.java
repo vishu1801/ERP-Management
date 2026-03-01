@@ -28,11 +28,11 @@ public class Role extends AuditableEntity {
 
     private String description;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "role_module_mapping",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "module_id")
-    )
-    private List<AppModule> appModules = new ArrayList<>();
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(
+//            name = "role_module_mapping",
+//            joinColumns = @JoinColumn(name = "role_id"),
+//            inverseJoinColumns = @JoinColumn(name = "module_id")
+//    )
+//    private List<AppModule> appModules = new ArrayList<>();
 }

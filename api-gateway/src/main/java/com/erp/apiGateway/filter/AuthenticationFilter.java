@@ -49,12 +49,12 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
                             String id = (String) user.get("id");
 
-                            Map<String, Object> roleMap = (Map<String, Object>) user.get("role");
-                            String roleName = (String) roleMap.get("name");
+//                            Map<String, Object> roleMap = (Map<String, Object>) user.get("role");
+//                            String roleName = (String) roleMap.get("name");
 
                             ServerHttpRequest mutated = exchange.getRequest().mutate()
                                     .header("X-USER-ID", id)
-                                    .header("X-USER-ROLE", roleName)
+//                                    .header("X-USER-ROLE", roleName)
                                     .build();
 
                             return chain.filter(exchange.mutate().request(mutated).build());

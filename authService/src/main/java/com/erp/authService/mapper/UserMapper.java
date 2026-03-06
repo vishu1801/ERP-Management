@@ -3,10 +3,7 @@ package com.erp.authService.mapper;
 import com.erp.authService.entity.User;
 import com.erp.authService.payload.request.UserRequestDTO;
 import com.erp.authService.payload.response.UserResponseDTO;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
@@ -27,5 +24,6 @@ public interface UserMapper {
     @Mapping(target = "group", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "username", source = "userName")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUser(@MappingTarget User user, UserRequestDTO requestDTO);
 }

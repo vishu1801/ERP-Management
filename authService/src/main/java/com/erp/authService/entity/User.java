@@ -1,13 +1,7 @@
 package com.erp.authService.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.erp.authService.enums.UserType;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,6 +28,10 @@ public class User extends AuditableEntity implements UserDetails {
     private String username;
 
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_type")
+    private UserType userType;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_id")

@@ -1,11 +1,8 @@
 package com.erp.authService.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
@@ -28,4 +25,7 @@ public class AppModule extends AuditableEntity {
 
     @ManyToMany(mappedBy = "appModules")
     private List<Group> groups = new ArrayList<>();
+
+    @OneToMany(mappedBy = "appModule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Page> pages = new ArrayList<>();
 }

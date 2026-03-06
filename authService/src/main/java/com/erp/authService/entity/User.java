@@ -35,10 +35,6 @@ public class User extends AuditableEntity implements UserDetails {
 
     private String password;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "role_id")
-//    private Role role;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_id")
     private Group group;

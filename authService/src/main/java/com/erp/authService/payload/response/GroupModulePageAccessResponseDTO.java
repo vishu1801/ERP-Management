@@ -6,20 +6,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GroupResponseDTO {
+public class GroupModulePageAccessResponseDTO {
 
     private String id;
-    private String name;
-    private String displayName;
-    private String description;
-    private Set<AppModuleSummaryResponseDTO> appModules = new HashSet<>();
+    private String groupId;
+    private String groupName;
+    private String appModuleId;
+    private String appModuleName;
+    private String pageId;
+    private String pageName;
+    private String pagePath;
+    private Boolean isAccessible;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

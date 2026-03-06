@@ -13,4 +13,5 @@ public class UserRequestDTO {
     private String lastName;
     private String email;
     private String userName;
+    private String groupId;
 }

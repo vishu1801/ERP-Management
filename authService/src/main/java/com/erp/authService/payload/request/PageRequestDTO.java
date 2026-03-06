@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppModuleRequestDTO {
+public class PageRequestDTO {
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -19,4 +19,18 @@ public class AppModuleRequestDTO {
     private String displayName;
 
     private String description;
+
+    @NotBlank(message = "Path is required")
+    private String path;
+
+    private String icon;
+
+    private Integer displayOrder;
+
+    private Boolean isActive = true;
+
+    @NotBlank(message = "App module ID is required")
+    private String appModuleId;
+
+    private String parentId; // null = root page
 }

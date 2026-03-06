@@ -2,18 +2,18 @@ package com.erp.authService.service;
 
 import com.erp.authService.payload.request.AppModuleRequestDTO;
 import com.erp.authService.payload.response.AppModuleResponseDTO;
-import jakarta.validation.Valid;
 
 import java.util.List;
 
 public interface IAppModuleService {
-    AppModuleResponseDTO createModule(AppModuleRequestDTO request);
 
-    AppModuleResponseDTO getModuleById(String id);
+    AppModuleResponseDTO create(AppModuleRequestDTO requestDTO);
 
-    List<AppModuleResponseDTO> getAllModules();
+    AppModuleResponseDTO getById(String id);
 
-    AppModuleResponseDTO updateModule(String id, @Valid AppModuleRequestDTO request);
+    List<AppModuleResponseDTO> getAll();
 
-    void deleteModule(String id);
+    AppModuleResponseDTO update(String id, AppModuleRequestDTO requestDTO);
+
+    void delete(String id);
 }

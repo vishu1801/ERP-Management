@@ -1,107 +1,176 @@
 package com.erp.authService.service.implementation;
 
+import com.erp.authService.entity.AppModule;
 import com.erp.authService.entity.Group;
+import com.erp.authService.entity.GroupModulePageAccess;
+import com.erp.authService.entity.Page;
 import com.erp.authService.mapper.GroupMapper;
 import com.erp.authService.payload.request.GroupRequestDTO;
 import com.erp.authService.payload.response.GroupResponseDTO;
-import com.erp.authService.repo.GroupRepository;
 import com.erp.authService.repo.AppModuleRepository;
+import com.erp.authService.repo.GroupModulePageAccessRepository;
+import com.erp.authService.repo.GroupRepository;
+import com.erp.authService.repo.PageRepository;
 import com.erp.authService.service.IGroupService;
-import com.erp.authService.entity.AppModule;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class GroupService implements IGroupService {
 
     private final GroupRepository groupRepository;
     private final AppModuleRepository appModuleRepository;
+    private final PageRepository pageRepository;
+    private final GroupModulePageAccessRepository groupModulePageAccessRepository;
     private final GroupMapper groupMapper;
 
     @Override
-    public GroupResponseDTO createGroup(GroupRequestDTO request) {
-        if (groupRepository.existsByName(request.getName())) {
-//            throw new DuplicateResourceException("Group", "name", request.getName());
+    public GroupResponseDTO create(GroupRequestDTO requestDTO) {
+        if (groupRepository.existsByName(requestDTO.getName())) {
+            throw new IllegalArgumentException("Group with name '" + requestDTO.getName() + "' already exists");
         }
 
-        Group group = groupMapper.toEntity(request);
+        Group group = groupMapper.toEntity(requestDTO);
 
-        if (request.getModuleIds() != null && !request.getModuleIds().isEmpty()) {
-            Set<AppModule> appModules = appModuleRepository.findAllByIdIn(request.getModuleIds());
-            group.setAppModules(appModules);
+        if (requestDTO.getAppModuleIds() != null && !requestDTO.getAppModuleIds().isEmpty()) {
+            Set<AppModule> modules = new HashSet<>(appModuleRepository.findAllById(requestDTO.getAppModuleIds()));
+            group.setAppModules(modules);
         }
 
-        return groupMapper.toResponse(groupRepository.save(group));
+        Group savedGroup = groupRepository.save(group);
+
+        // ─── Default: grant access to ALL existing pages for this new group ───────
+        assignAllPagesToGroup(savedGroup);
+
+        return groupMapper.toResponseDTO(savedGroup);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public GroupResponseDTO getGroupById(String id) {
-        Group group = groupRepository.findById(id)
-                .orElseThrow();
-        return groupMapper.toResponse(group);
+    public GroupResponseDTO getById(String id) {
+        return groupMapper.toResponseDTO(findGroupById(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<GroupResponseDTO> getAllGroups() {
+    public List<GroupResponseDTO> getAll() {
         return groupRepository.findAll()
                 .stream()
-                .map(groupMapper::toResponse)
-                .toList();
+                .map(groupMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public GroupResponseDTO updateGroup(String id, GroupRequestDTO request) {
-        Group group = groupRepository.findById(id)
-                .orElseThrow();
+    public GroupResponseDTO update(String id, GroupRequestDTO requestDTO) {
+        Group group = findGroupById(id);
 
-        if (!group.getName().equals(request.getName())
-                && groupRepository.existsByName(request.getName())) {
-//            throw new DuplicateResourceException("Group", "name", request.getName());
+        if (groupRepository.existsByNameAndIdNot(requestDTO.getName(), id)) {
+            throw new IllegalArgumentException("Group with name '" + requestDTO.getName() + "' already exists");
         }
 
-        groupMapper.updateEntity(request, group);
+        groupMapper.updateEntityFromDTO(requestDTO, group);
 
-        if (request.getModuleIds() != null) {
-            Set<AppModule> appModules = appModuleRepository.findAllByIdIn(request.getModuleIds());
-            group.setAppModules(appModules);
+        if (requestDTO.getAppModuleIds() != null) {
+            Set<AppModule> modules = new HashSet<>(appModuleRepository.findAllById(requestDTO.getAppModuleIds()));
+            group.setAppModules(modules);
         }
 
-        return groupMapper.toResponse(groupRepository.save(group));
+        return groupMapper.toResponseDTO(groupRepository.save(group));
     }
 
     @Override
-    public void deleteGroup(String id) {
-        Group group = groupRepository.findById(id)
-                .orElseThrow();
-        group.getAppModules().clear(); // Clear join table before deleting
-        groupRepository.delete(group);
+    public void delete(String id) {
+        groupRepository.delete(findGroupById(id));
     }
 
     @Override
-    public GroupResponseDTO assignModulesToGroup(String groupId, Set<Long> moduleIds) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow();
+    public GroupResponseDTO addModules(String groupId, Set<String> appModuleIds) {
+        Group group = findGroupById(groupId);
+        Set<AppModule> newModules = new HashSet<>(appModuleRepository.findAllById(appModuleIds));
+        group.getAppModules().addAll(newModules);
+        Group savedGroup = groupRepository.save(group);
 
-        Set<AppModule> appModules = appModuleRepository.findAllByIdIn(moduleIds);
-        group.getAppModules().addAll(appModules);
+        // ─── When new modules are added to a group, grant access to all their pages ─
+        newModules.forEach(module ->
+                assignModulePagesToGroup(savedGroup, module)
+        );
 
-        return groupMapper.toResponse(groupRepository.save(group));
+        return groupMapper.toResponseDTO(savedGroup);
     }
 
     @Override
-    public GroupResponseDTO removeModulesFromGroup(String groupId, Set<Long> moduleIds) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow();
+    public GroupResponseDTO removeModules(String groupId, Set<String> appModuleIds) {
+        Group group = findGroupById(groupId);
+        group.getAppModules().removeIf(module -> appModuleIds.contains(module.getId()));
+        return groupMapper.toResponseDTO(groupRepository.save(group));
+    }
 
-        group.getAppModules().removeIf(module -> moduleIds.contains(module.getId()));
+    // ─── Private Helpers ─────────────────────────────────────────────────────────
 
-        return groupMapper.toResponse(groupRepository.save(group));
+    /**
+     * When a new Group is created, fetch ALL pages across ALL modules
+     * and create a GroupModulePageAccess record with isAccessible = true for each.
+     */
+    private void assignAllPagesToGroup(Group group) {
+        List<Page> allPages = pageRepository.findAll();
+
+        List<GroupModulePageAccess> accessList = allPages.stream()
+                .filter(page -> !groupModulePageAccessRepository
+                        .existsByGroup_IdAndAppModule_IdAndPage_Id(
+                                group.getId(),
+                                page.getAppModule().getId(),
+                                page.getId()))
+                .map(page -> buildAccessRecord(group, page.getAppModule(), page))
+                .collect(Collectors.toList());
+
+        if (!accessList.isEmpty()) {
+            groupModulePageAccessRepository.saveAll(accessList);
+        }
+    }
+
+    /**
+     * When a new AppModule is added to a Group, grant access to all pages of that module.
+     */
+    private void assignModulePagesToGroup(Group group, AppModule module) {
+        List<Page> modulePages = pageRepository.findByAppModule_Id(module.getId());
+
+        List<GroupModulePageAccess> accessList = modulePages.stream()
+                .filter(page -> !groupModulePageAccessRepository
+                        .existsByGroup_IdAndAppModule_IdAndPage_Id(
+                                group.getId(),
+                                module.getId(),
+                                page.getId()))
+                .map(page -> buildAccessRecord(group, module, page))
+                .collect(Collectors.toList());
+
+        if (!accessList.isEmpty()) {
+            groupModulePageAccessRepository.saveAll(accessList);
+        }
+    }
+
+    /**
+     * Builds a GroupModulePageAccess record with isAccessible = true by default.
+     */
+    private GroupModulePageAccess buildAccessRecord(Group group, AppModule module, Page page) {
+        GroupModulePageAccess access = new GroupModulePageAccess();
+        access.setGroup(group);
+        access.setAppModule(module);
+        access.setPage(page);
+        access.setIsAccessible(true);
+        return access;
+    }
+
+    private Group findGroupById(String id) {
+        return groupRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Group not found with id: " + id));
     }
 }

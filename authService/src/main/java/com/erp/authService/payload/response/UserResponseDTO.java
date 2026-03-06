@@ -1,6 +1,5 @@
 package com.erp.authService.payload.response;
 
-import com.erp.authService.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +10,11 @@ import lombok.NoArgsConstructor;
 public class UserResponseDTO {
 
     private String id;
-
-    private Role role;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String userName;
+    private String groupId;
+    private String groupName;
+    private String groupDisplayName;
 }

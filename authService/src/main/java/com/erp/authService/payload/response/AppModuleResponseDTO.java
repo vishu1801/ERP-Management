@@ -2,21 +2,24 @@ package com.erp.authService.payload.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class AppModuleResponseDTO {
 
     private String id;
     private String name;
+    private String displayName;
     private String description;
-    private List<GroupResponseDTO> groups;
+    private List<PageResponseDTO> pages = new ArrayList<>();
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

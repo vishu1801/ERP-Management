@@ -7,17 +7,18 @@ import java.util.List;
 import java.util.Set;
 
 public interface IGroupService {
-    GroupResponseDTO createGroup(GroupRequestDTO request);
 
-    GroupResponseDTO getGroupById(String id);
+    GroupResponseDTO create(GroupRequestDTO requestDTO);
 
-    List<GroupResponseDTO> getAllGroups();
+    GroupResponseDTO getById(String id);
 
-    GroupResponseDTO updateGroup(String id, GroupRequestDTO request);
+    List<GroupResponseDTO> getAll();
 
-    void deleteGroup(String id);
+    GroupResponseDTO update(String id, GroupRequestDTO requestDTO);
 
-    GroupResponseDTO assignModulesToGroup(String groupId, Set<Long> moduleIds);
+    void delete(String id);
 
-    GroupResponseDTO removeModulesFromGroup(String groupId, Set<Long> moduleIds);
+    GroupResponseDTO addModules(String groupId, Set<String> appModuleIds);
+
+    GroupResponseDTO removeModules(String groupId, Set<String> appModuleIds);
 }

@@ -18,6 +18,8 @@ public interface GroupModulePageAccessRepository extends JpaRepository<GroupModu
 
     List<GroupModulePageAccess> findByGroup_IdAndAppModule_IdAndIsAccessibleTrue(String groupId, String appModuleId);
 
+    List<GroupModulePageAccess> findByGroup_IdAndAppModule_IdAndIsAccessibleTrueOrderByPage_DisplayOrderAsc(String groupId, String appModuleId);
+
     Optional<GroupModulePageAccess> findByGroup_IdAndAppModule_IdAndPage_Id(String groupId, String appModuleId, String pageId);
 
     boolean existsByGroup_IdAndAppModule_IdAndPage_Id(String groupId, String appModuleId, String pageId);

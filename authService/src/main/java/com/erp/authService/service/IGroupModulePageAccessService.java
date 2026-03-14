@@ -1,6 +1,7 @@
 package com.erp.authService.service;
 
 import com.erp.authService.payload.request.GroupModulePageAccessRequestDTO;
+import com.erp.authService.payload.response.AccessiblePageResponseDTO;
 import com.erp.authService.payload.response.GroupModulePageAccessResponseDTO;
 
 import java.util.List;
@@ -20,6 +21,8 @@ public interface IGroupModulePageAccessService {
     List<GroupModulePageAccessResponseDTO> getAccessiblePagesByGroup(String groupId);
 
     List<GroupModulePageAccessResponseDTO> getAccessiblePagesByGroupAndModule(String groupId, String appModuleId);
+
+    List<AccessiblePageResponseDTO> getAccessiblePagesHierarchy(String groupId, String appModuleId);
 
     GroupModulePageAccessResponseDTO update(String id, GroupModulePageAccessRequestDTO requestDTO);
 

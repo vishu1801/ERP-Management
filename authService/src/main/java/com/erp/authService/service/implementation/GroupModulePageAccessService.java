@@ -6,6 +6,7 @@ import com.erp.authService.entity.GroupModulePageAccess;
 import com.erp.authService.entity.Page;
 import com.erp.authService.mapper.GroupModulePageAccessMapper;
 import com.erp.authService.payload.request.GroupModulePageAccessRequestDTO;
+import com.erp.authService.payload.response.AccessiblePageResponseDTO;
 import com.erp.authService.payload.response.GroupModulePageAccessResponseDTO;
 import com.erp.authService.repo.AppModuleRepository;
 import com.erp.authService.repo.GroupModulePageAccessRepository;
@@ -17,7 +18,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,6 +100,66 @@ public class GroupModulePageAccessService implements IGroupModulePageAccessServi
         findModuleById(appModuleId);
         return accessMapper.toResponseDTOList(
                 accessRepository.findByGroup_IdAndAppModule_IdAndIsAccessibleTrue(groupId, appModuleId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AccessiblePageResponseDTO> getAccessiblePagesHierarchy(String groupId, String appModuleId) {
+        findGroupById(groupId);
+        findModuleById(appModuleId);
+
+        List<GroupModulePageAccess> accessList = accessRepository
+                .findByGroup_IdAndAppModule_IdAndIsAccessibleTrueOrderByPage_DisplayOrderAsc(groupId, appModuleId);
+
+        Set<String> accessiblePageIds = accessList.stream()
+                .map(a -> a.getPage().getId())
+                .collect(Collectors.toSet());
+
+        Map<String, AccessiblePageResponseDTO> dtoMap = accessList.stream()
+                .collect(Collectors.toMap(
+                        a -> a.getPage().getId(),
+                        a -> toAccessiblePageDTO(a.getPage())
+                ));
+
+        List<AccessiblePageResponseDTO> rootPages = new ArrayList<>();
+
+        for (GroupModulePageAccess access : accessList) {
+            Page page = access.getPage();
+            AccessiblePageResponseDTO dto = dtoMap.get(page.getId());
+
+            if (page.getParent() == null || !accessiblePageIds.contains(page.getParent().getId())) {
+                rootPages.add(dto);
+            } else {
+                AccessiblePageResponseDTO parentDto = dtoMap.get(page.getParent().getId());
+                if (parentDto != null) {
+                    parentDto.getSubPages().add(dto);
+                }
+            }
+        }
+
+        Comparator<AccessiblePageResponseDTO> byDisplayOrder =
+                Comparator.comparingInt(p -> p.getDisplayOrder() != null ? p.getDisplayOrder() : Integer.MAX_VALUE);
+
+        rootPages.sort(byDisplayOrder);
+        rootPages.forEach(p -> sortSubPagesRecursively(p, byDisplayOrder));
+
+        return rootPages;
+    }
+
+    private AccessiblePageResponseDTO toAccessiblePageDTO(Page page) {
+        return AccessiblePageResponseDTO.builder()
+                .pageId(page.getId())
+                .pageName(page.getName())
+                .pageDisplayName(page.getDisplayName())
+                .pagePath(page.getPath())
+                .pageIcon(page.getIcon())
+                .displayOrder(page.getDisplayOrder())
+                .build();
+    }
+
+    private void sortSubPagesRecursively(AccessiblePageResponseDTO dto, Comparator<AccessiblePageResponseDTO> comparator) {
+        dto.getSubPages().sort(comparator);
+        dto.getSubPages().forEach(sub -> sortSubPagesRecursively(sub, comparator));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.erp.authService.controller;
 
 import com.erp.authService.payload.request.GroupModulePageAccessRequestDTO;
+import com.erp.authService.payload.response.AccessiblePageResponseDTO;
 import com.erp.authService.payload.response.GroupModulePageAccessResponseDTO;
 import com.erp.authService.service.IGroupModulePageAccessService;
 import jakarta.validation.Valid;
@@ -63,10 +64,10 @@ public class GroupModulePageAccessController {
     }
 
     @GetMapping("/group/{groupId}/module/{appModuleId}/accessible")
-    public ResponseEntity<List<GroupModulePageAccessResponseDTO>> getAccessiblePagesByGroupAndModule(
+    public ResponseEntity<List<AccessiblePageResponseDTO>> getAccessiblePagesByGroupAndModule(
             @PathVariable String groupId,
             @PathVariable String appModuleId) {
-        return ResponseEntity.ok(accessService.getAccessiblePagesByGroupAndModule(groupId, appModuleId));
+        return ResponseEntity.ok(accessService.getAccessiblePagesHierarchy(groupId, appModuleId));
     }
 
     @PutMapping("/{id}")

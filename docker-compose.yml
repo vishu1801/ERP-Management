@@ -1,0 +1,79 @@
+version: "3.9"
+
+services:
+
+  # ── Discovery Service (Eureka) ───────────────────────────────────────────────
+  discovery-service:
+    build:
+      context: ./discovery-service
+    container_name: erp-discovery
+    ports:
+      - "8761:8761"
+    environment:
+      EUREKA_INSTANCE_HOSTNAME: discovery-service
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8761/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    networks:
+      - erp-network
+
+  # ── Auth Service ─────────────────────────────────────────────────────────────
+  auth-service:
+    build:
+      context: ./authService
+    container_name: erp-auth
+    ports:
+      - "8081:8081"
+    environment:
+      DB_URL: jdbc:postgresql://dpg-d6rvor4r85hc738lrlpg-a/auth_db_2mp4
+      DB_USERNAME: postgre
+      DB_PASSWORD: PG6ANGon8Qbmf0G1Ek5PO5nqJrp0tjQw
+      EUREKA_URL: http://discovery-service:8761/eureka
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    networks:
+      - erp-network
+
+  # ── Student Information Service ──────────────────────────────────────────────
+  student-service:
+    build:
+      context: ./studentInformationSystem
+    container_name: erp-student
+    ports:
+      - "8092:8092"
+    environment:
+      DB_URL: ${STUDENT_DB_URL}         # e.g. jdbc:postgresql://<host>/<student_db>
+      DB_USERNAME: ${STUDENT_DB_USER}
+      DB_PASSWORD: ${STUDENT_DB_PASSWORD}
+      EUREKA_URL: http://discovery-service:8761/eureka
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    networks:
+      - erp-network
+
+  # ── API Gateway ───────────────────────────────────────────────────────────────
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: erp-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_URL: http://discovery-service:8761/eureka
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      student-service:
+        condition: service_started
+    networks:
+      - erp-network
+
+networks:
+  erp-network:
+    driver: bridge

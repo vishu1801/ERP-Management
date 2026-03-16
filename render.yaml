@@ -1,0 +1,57 @@
+services:
+
+  # ── Discovery Service (Eureka) ───────────────────────────────────────────────
+  - type: web
+    name: erp-discovery
+    runtime: docker
+    dockerfilePath: ./discovery-service/Dockerfile
+    dockerContext: ./discovery-service
+    plan: free
+    envVars:
+      - key: EUREKA_INSTANCE_HOSTNAME
+        value: erp-discovery
+
+  # ── Auth Service ─────────────────────────────────────────────────────────────
+  - type: web
+    name: erp-auth
+    runtime: docker
+    dockerfilePath: ./authService/Dockerfile
+    dockerContext: ./authService
+    plan: free
+    envVars:
+      - key: DB_URL
+        value: jdbc:postgresql://dpg-d6rvor4r85hc738lrlpg-a/auth_db_2mp4
+      - key: DB_USERNAME
+        value: postgre
+      - key: DB_PASSWORD
+        value: PG6ANGon8Qbmf0G1Ek5PO5nqJrp0tjQw
+      - key: EUREKA_URL
+        value: http://erp-discovery:8761/eureka
+
+  # ── Student Information Service ──────────────────────────────────────────────
+  - type: web
+    name: erp-student
+    runtime: docker
+    dockerfilePath: ./studentInformationSystem/Dockerfile
+    dockerContext: ./studentInformationSystem
+    plan: free
+    envVars:
+      - key: DB_URL
+        sync: false   # Set this in Render dashboard
+      - key: DB_USERNAME
+        sync: false   # Set this in Render dashboard
+      - key: DB_PASSWORD
+        sync: false   # Set this in Render dashboard
+      - key: EUREKA_URL
+        value: http://erp-discovery:8761/eureka
+
+  # ── API Gateway ───────────────────────────────────────────────────────────────
+  - type: web
+    name: erp-gateway
+    runtime: docker
+    dockerfilePath: ./api-gateway/Dockerfile
+    dockerContext: ./api-gateway
+    plan: free
+    envVars:
+      - key: EUREKA_URL
+        value: http://erp-discovery:8761/eureka

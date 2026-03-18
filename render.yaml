@@ -20,7 +20,7 @@ services:
     plan: free
     envVars:
       - key: DB_URL
-        value: jdbc:postgresql://dpg-d6rvor4r85hc738lrlpg-a/auth_db_2mp4
+        value: jdbc:postgresql://dpg-d6rvor4r85hc738lrlpg-a.oregon-postgres.render.com:5432/auth_db_2mp4
       - key: DB_USERNAME
         value: postgre
       - key: DB_PASSWORD

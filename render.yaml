@@ -59,3 +59,5 @@ services:
     envVars:
       - key: EUREKA_URL
         value: https://erp-discovery.onrender.com/eureka
+      - key: AUTH_SERVICE_URL
+        value: https://erp-auth.onrender.com

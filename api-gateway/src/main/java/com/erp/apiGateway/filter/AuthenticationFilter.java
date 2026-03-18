@@ -2,6 +2,7 @@ package com.erp.apiGateway.filter;
 
 import io.micrometer.common.util.StringUtils;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
@@ -14,19 +15,21 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
     private final RouteValidator routeValidator;
-    private final WebClient.Builder webClient;
+    private final WebClient plainWebClient;
 
-    public AuthenticationFilter(RouteValidator routeValidator, WebClient.Builder webClient) {
+    @Value("${AUTH_SERVICE_URL:lb://AUTH-SERVICE}")
+    private String authServiceUrl;
+
+    public AuthenticationFilter(RouteValidator routeValidator, WebClient plainWebClient) {
         super(Config.class);
         this.routeValidator = routeValidator;
-        this.webClient = webClient;
+        this.plainWebClient = plainWebClient;
     }
 
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
             if (routeValidator.isSecured.test(exchange.getRequest())) {
-                //header contains token or not
 
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
                     throw new RuntimeException("Missing header");
@@ -38,32 +41,22 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     token = token.substring(7);
                 }
 
-                return webClient.build().post()
-                        .uri("lb://AUTH-SERVICE/auth/getUser")
+                return plainWebClient.post()
+                        .uri(authServiceUrl + "/auth/getUser")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .retrieve()
                         .bodyToMono(Map.class)
                         .flatMap(user -> {
-
                             String id = (String) user.get("id");
-
-//                            Map<String, Object> roleMap = (Map<String, Object>) user.get("role");
-//                            String roleName = (String) roleMap.get("name");
-
                             ServerHttpRequest mutated = exchange.getRequest().mutate()
                                     .header("X-USER-ID", id)
-//                                    .header("X-USER-ROLE", roleName)
                                     .build();
-
                             return chain.filter(exchange.mutate().request(mutated).build());
-
                         })
                         .onErrorResume(e -> {
                             throw new RuntimeException("Unauthorized: " + e.getMessage());
                         });
-
-
             }
             return chain.filter(exchange);
         });

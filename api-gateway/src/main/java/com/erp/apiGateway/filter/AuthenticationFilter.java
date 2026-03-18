@@ -14,15 +14,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
     private final RouteValidator routeValidator;
-    private final WebClient.Builder webClient;
+    private final WebClient plainWebClient;
 
     @org.springframework.beans.factory.annotation.Value("${AUTH_SERVICE_URL:lb://AUTH-SERVICE}")
     private String authServiceUrl;
 
-    public AuthenticationFilter(RouteValidator routeValidator, WebClient.Builder webClient) {
+    public AuthenticationFilter(RouteValidator routeValidator, WebClient plainWebClient) {
         super(Config.class);
         this.routeValidator = routeValidator;
-        this.webClient = webClient;
+        this.plainWebClient = plainWebClient;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     token = token.substring(7);
                 }
 
-                return webClient.build().post()
+                return plainWebClient.post()
                         .uri(authServiceUrl + "/auth/getUser")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)

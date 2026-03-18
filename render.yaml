@@ -55,3 +55,5 @@ services:
     envVars:
       - key: EUREKA_URL
         value: http://erp-discovery:8761/eureka
+      - key: AUTH_SERVICE_URL
+        sync: false   # Set this in Render dashboard to your erp-auth public URL

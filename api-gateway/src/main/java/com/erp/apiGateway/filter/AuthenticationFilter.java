@@ -16,6 +16,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     private final RouteValidator routeValidator;
     private final WebClient.Builder webClient;
 
+    @org.springframework.beans.factory.annotation.Value("${AUTH_SERVICE_URL:lb://AUTH-SERVICE}")
+    private String authServiceUrl;
 
     public AuthenticationFilter(RouteValidator routeValidator, WebClient.Builder webClient) {
         super(Config.class);
@@ -40,7 +42,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 }
 
                 return webClient.build().post()
-                        .uri("lb://AUTH-SERVICE/auth/getUser")
+                        .uri(authServiceUrl + "/auth/getUser")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .retrieve()

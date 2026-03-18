@@ -9,7 +9,7 @@ services:
     plan: free
     envVars:
       - key: EUREKA_INSTANCE_HOSTNAME
-        value: erp-discovery
+        value: erp-discovery.onrender.com
 
   # ── Auth Service ─────────────────────────────────────────────────────────────
   - type: web
@@ -26,7 +26,9 @@ services:
       - key: DB_PASSWORD
         value: PG6ANGon8Qbmf0G1Ek5PO5nqJrp0tjQw
       - key: EUREKA_URL
-        value: http://erp-discovery:8761/eureka
+        value: https://erp-discovery.onrender.com/eureka
+      - key: RENDER_HOSTNAME
+        value: erp-auth.onrender.com
 
   # ── Student Information Service ──────────────────────────────────────────────
   - type: web
@@ -43,7 +45,9 @@ services:
       - key: DB_PASSWORD
         sync: false   # Set this in Render dashboard
       - key: EUREKA_URL
-        value: http://erp-discovery:8761/eureka
+        value: https://erp-discovery.onrender.com/eureka
+      - key: RENDER_HOSTNAME
+        value: erp-student.onrender.com
 
   # ── API Gateway ───────────────────────────────────────────────────────────────
   - type: web
@@ -54,4 +58,4 @@ services:
     plan: free
     envVars:
       - key: EUREKA_URL
-        value: http://erp-discovery:8761/eureka
+        value: https://erp-discovery.onrender.com/eureka

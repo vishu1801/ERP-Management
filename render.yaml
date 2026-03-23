@@ -53,9 +53,9 @@ services:
     dockerContext: ./api-gateway
     plan: free
     envVars:
-      - key: EUREKA_URL
-        value: https://erp-discovery.onrender.com/eureka
+      - key: EUREKA_ENABLED
+        value: false
       - key: AUTH_SERVICE_URL
-        value: https://erp-auth.onrender.com
+        value: https://erp-auth-kmyi.onrender.com
       - key: STUDENT_SERVICE_URL
-        value: https://erp-student.onrender.com
+        value: https://erp-student-e4sv.onrender.com

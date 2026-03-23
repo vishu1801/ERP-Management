@@ -29,9 +29,15 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
+            String path = exchange.getRequest().getURI().getPath();
+            System.out.println("[Gateway] Incoming request: " + exchange.getRequest().getMethod() + " " + path);
+            System.out.println("[Gateway] AUTH_SERVICE_URL = " + authServiceUrl);
+
             if (routeValidator.isSecured.test(exchange.getRequest())) {
+                System.out.println("[Gateway] Route is SECURED, validating token...");
 
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+                    System.out.println("[Gateway] ERROR: Missing Authorization header");
                     throw new RuntimeException("Missing header");
                 }
 
@@ -41,6 +47,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     token = token.substring(7);
                 }
 
+                System.out.println("[Gateway] Calling auth service for token validation: " + authServiceUrl + "/auth/getUser");
                 return plainWebClient.post()
                         .uri(authServiceUrl + "/auth/getUser")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -49,15 +56,18 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                         .bodyToMono(Map.class)
                         .flatMap(user -> {
                             String id = (String) user.get("id");
+                            System.out.println("[Gateway] Token valid, user id: " + id + ", forwarding request...");
                             ServerHttpRequest mutated = exchange.getRequest().mutate()
                                     .header("X-USER-ID", id)
                                     .build();
                             return chain.filter(exchange.mutate().request(mutated).build());
                         })
                         .onErrorResume(e -> {
+                            System.out.println("[Gateway] Token validation FAILED: " + e.getMessage());
                             throw new RuntimeException("Unauthorized: " + e.getMessage());
                         });
             }
+            System.out.println("[Gateway] Route is OPEN, forwarding directly...");
             return chain.filter(exchange);
         });
     }
